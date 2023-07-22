@@ -1,8 +1,5 @@
-import { Component } from 'react';
-
 import * as services from 'services/notify';
 import { nanoid } from 'nanoid';
-
 import {
   AddContactWrapper,
   ContactsWrapper,
@@ -13,26 +10,26 @@ import {
 import { ContactForm } from './ContactForm/ContactForm';
 import { Filter } from './Filter/Filter';
 import { ContactList } from './ContactsList/ContactList';
+import { useEffect, useState, useMemo } from 'react';
 
 const CONTACT_KEY = 'contacts';
 
-export class App extends Component {
-  state = {
-    contacts: [
-      { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-      { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-      { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-      { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-    ],
-    filter: '',
-    order: 'az',
-  };
+export function App() {
+  const [contacts, setContacts] = useState([
+    { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
+    { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
+    { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
+    { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
+  ]);
+  const [filter, setFilter] = useState('');
+  const [order, setOrder] = useState('az');
+  const [firstLoad, setFirstLoad] = useState(true);
 
-  onStorageContact = (contactName, contactNumber) => {
-    if (this.state.contacts.find(user => user.name === contactName)) {
+  const onStorageContact = (contactName, contactNumber) => {
+    if (contacts.find(user => user.name === contactName)) {
       return services.Notify.warning(`${contactName} is already in contacts`);
     }
-    if (this.state.contacts.find(user => user.number === contactNumber)) {
+    if (contacts.find(user => user.number === contactNumber)) {
       return services.Notify.warning(
         `This number: ${contactNumber} is already in contacts`
       );
@@ -43,37 +40,26 @@ export class App extends Component {
       id: nanoid(),
     };
 
-    this.setState(prevState => ({
-      contacts: [...prevState.contacts, user],
-      filter: '',
-    }));
+    setContacts([...contacts, user]);
+    setFilter('');
   };
 
-  componentDidMount() {
-    const getContacts = JSON.parse(window.localStorage.getItem(CONTACT_KEY));
-    if (getContacts) {
-      this.setState({
-        contacts: getContacts,
-      });
+  useEffect(() => {
+    if (firstLoad) {
+      const loaded = JSON.parse(window.localStorage.getItem(CONTACT_KEY)) ?? [];
+      if (loaded.length) setContacts(loaded);
+      setFirstLoad(false);
     }
-  }
+    if (!firstLoad)
+      window.localStorage.setItem(CONTACT_KEY, JSON.stringify(contacts));
+  }, [firstLoad, contacts]);
 
-  componentDidUpdate(_, prevState) {
-    if (prevState.contacts !== this.state.contacts) {
-      window.localStorage.setItem(
-        CONTACT_KEY,
-        JSON.stringify(this.state.contacts)
-      );
-    }
-  }
-
-  onFilterContact = e => {
+  const onFilterContact = e => {
     const filter = e.target.value.toLowerCase();
-    this.setState({ filter });
+    setFilter(filter);
   };
 
-  getFilteredContacts = () => {
-    const { contacts, filter, order } = this.state;
+  const getFilteredContacts = useMemo(() => {
     const filtered = contacts.filter(el =>
       el.name.toLowerCase().includes(filter)
     );
@@ -84,13 +70,13 @@ export class App extends Component {
     }
 
     return filtered;
+  }, [contacts, filter, order]);
+
+  const onSortContacts = order => {
+    setOrder(order);
   };
 
-  onSortContacts = order => {
-    this.setState({ order });
-  };
-
-  onDeleteContact = user => {
+  const onDeleteContact = user => {
     services.Confirm.show(
       `Delete contact`,
       `Are you sure you want to delete contact ${user.name}?`,
@@ -98,36 +84,30 @@ export class App extends Component {
       'No',
       () => {
         services.Notify.info(`Contact ${user.name} was deleted`);
-        return this.setState(prevState => ({
-          contacts: prevState.contacts.filter(
-            contact => contact.id !== user.id
-          ),
-        }));
+        return setContacts(contacts.filter(contact => contact.id !== user.id));
       }
     );
   };
 
-  render() {
-    return (
-      <Container>
-        <AddContactWrapper>
-          <HeaderApp>Phonebook</HeaderApp>
-          <ContactForm onStorageContact={this.onStorageContact} />
-        </AddContactWrapper>
-        <ContactsWrapper>
-          <Filter
-            onFilterContact={this.onFilterContact}
-            filter={this.state.filter}
-          />
-          <HeaderContacts>Contacts</HeaderContacts>
-          <ContactList
-            contactList={this.getFilteredContacts()}
-            onSortContacts={this.onSortContacts}
-            onDeleteContact={this.onDeleteContact}
-            hasContacts={this.state.contacts.length > 0}
-          />
-        </ContactsWrapper>
-      </Container>
-    );
-  }
+  return (
+    <Container>
+      <AddContactWrapper>
+        <HeaderApp>Phonebook</HeaderApp>
+        <ContactForm
+          onStorageContact={onStorageContact}
+          firstLoad={firstLoad}
+        />
+      </AddContactWrapper>
+      <ContactsWrapper>
+        <Filter onFilterContact={onFilterContact} filter={filter} />
+        <HeaderContacts>Contacts</HeaderContacts>
+        <ContactList
+          contactList={getFilteredContacts}
+          onSortContacts={onSortContacts}
+          onDeleteContact={onDeleteContact}
+          hasContacts={contacts.length > 0}
+        />
+      </ContactsWrapper>
+    </Container>
+  );
 }

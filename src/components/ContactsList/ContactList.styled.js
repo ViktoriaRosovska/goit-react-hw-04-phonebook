@@ -6,6 +6,12 @@ const ContactsListContainer = styled.div`
   width: 340px;
   height: 280px;
   overflow: hidden;
+  -webkit-box-shadow: inset rgba(50, 50, 93, 0.25) 2px 0px 3px 1px,
+    inset rgba(0, 0, 0, 0.3) -2px 1px 3px 0px;
+  -moz-box-shadow: inset rgba(50, 50, 93, 0.25) 2px 0px 3px 1px,
+    inset rgba(0, 0, 0, 0.3) -2px 1px 3px 0px;
+  box-shadow: inset rgba(50, 50, 93, 0.25) 2px 0px 3px 1px,
+    inset rgba(0, 0, 0, 0.3) -2px 1px 3px 0px;
 `;
 
 const ContactListRender = styled.div`

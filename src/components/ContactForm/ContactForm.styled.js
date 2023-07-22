@@ -9,6 +9,12 @@ const FormWrapper = styled.div`
   border-radius: 10px;
   gap: 10px;
   height: 240px;
+  -webkit-box-shadow: inset rgba(50, 50, 93, 0.25) 2px 0px 3px 1px,
+    inset rgba(0, 0, 0, 0.3) -2px 1px 3px 0px;
+  -moz-box-shadow: inset rgba(50, 50, 93, 0.25) 2px 0px 3px 1px,
+    inset rgba(0, 0, 0, 0.3) -2px 1px 3px 0px;
+  box-shadow: inset rgba(50, 50, 93, 0.25) 2px 0px 3px 1px,
+    inset rgba(0, 0, 0, 0.3) -2px 1px 3px 0px;
 `;
 
 const FormInput = styled.input`
@@ -34,9 +40,21 @@ const FormButton = styled.button`
   width: 150px;
   height: 30px;
   font-weight: bold;
+  -webkit-box-shadow: rgba(50, 50, 93, 0.25) 2px 0px 3px 1px,
+    rgba(0, 0, 0, 0.3) -2px 1px 3px 0px;
+  -moz-box-shadow: rgba(50, 50, 93, 0.25) 2px 0px 3px 1px,
+    rgba(0, 0, 0, 0.3) -2px 1px 3px 0px;
+  box-shadow: rgba(50, 50, 93, 0.25) 2px 0px 3px 1px,
+    rgba(0, 0, 0, 0.3) -2px 1px 3px 0px;
   &:hover {
     background-color: #f26b94;
     color: white;
+    -webkit-box-shadow: inset rgba(50, 50, 93, 0.25) 2px 0px 3px 1px,
+      inset rgba(0, 0, 0, 0.3) -2px 1px 3px 0px;
+    -moz-box-shadow: inset rgba(50, 50, 93, 0.25) 2px 0px 3px 1px,
+      inset rgba(0, 0, 0, 0.3) -2px 1px 3px 0px;
+    box-shadow: inset rgba(50, 50, 93, 0.25) 2px 0px 3px 1px,
+      inset rgba(0, 0, 0, 0.3) -2px 1px 3px 0px;
   }
 `;
 const FindLabel = styled.label`
