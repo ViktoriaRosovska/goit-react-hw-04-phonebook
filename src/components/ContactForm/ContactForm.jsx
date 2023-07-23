@@ -8,7 +8,8 @@ export function ContactForm({ onStorageContact, firstLoad }) {
 
   useEffect(() => {
     const user = { name, number };
-    if (firstLoad) {
+
+    if (firstLoad && window.localStorage.getItem('user')) {
       setName(JSON.parse(window.localStorage.getItem('user')).name ?? '');
       setNumber(JSON.parse(window.localStorage.getItem('user')).number ?? '');
     }
