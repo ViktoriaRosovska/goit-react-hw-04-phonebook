@@ -1,27 +1,18 @@
 import PropTypes from 'prop-types';
 import { FormWrapper, FormInput, FormButton } from './ContactForm.styled';
-import { useEffect, useState } from 'react';
+import { useLocalStorage } from 'components/hooks/useLocalStorage';
 
-export function ContactForm({ onStorageContact, firstLoad }) {
-  const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
-
-  useEffect(() => {
-    const user = { name, number };
-
-    if (firstLoad && window.localStorage.getItem('user')) {
-      setName(JSON.parse(window.localStorage.getItem('user')).name ?? '');
-      setNumber(JSON.parse(window.localStorage.getItem('user')).number ?? '');
-    }
-    if (!firstLoad) window.localStorage.setItem('user', JSON.stringify(user));
-  }, [firstLoad, name, number]);
+export function ContactForm({ onStorageContact }) {
+  const [user, setUser] = useLocalStorage('user', { name: '', number: '' });
 
   const onFormSubmit = e => {
     e.preventDefault();
     const userName = e.currentTarget.elements.name.value;
     const userNumber = e.currentTarget.elements.number.value;
-    setName(userName);
-    setNumber(userNumber);
+    if (user) {
+      setUser({ name: userName, number: userNumber });
+    }
+
     onStorageContact(userName, userNumber);
     e.currentTarget.reset();
   };
@@ -54,5 +45,4 @@ export function ContactForm({ onStorageContact, firstLoad }) {
 
 ContactForm.propTypes = {
   onStorageContact: PropTypes.func.isRequired,
-  firstLoad: PropTypes.bool.isRequired,
 };

@@ -10,20 +10,21 @@ import {
 import { ContactForm } from './ContactForm/ContactForm';
 import { Filter } from './Filter/Filter';
 import { ContactList } from './ContactsList/ContactList';
-import { useEffect, useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
+import { useLocalStorage } from './hooks/useLocalStorage';
 
 const CONTACT_KEY = 'contacts';
+const defaultState = [
+  { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
+  { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
+  { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
+  { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
+];
 
 export function App() {
-  const [contacts, setContacts] = useState([
-    { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-    { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-    { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-    { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-  ]);
+  const [contacts, setContacts] = useLocalStorage(CONTACT_KEY, defaultState);
   const [filter, setFilter] = useState('');
   const [order, setOrder] = useState('az');
-  const [firstLoad, setFirstLoad] = useState(true);
 
   const onStorageContact = (contactName, contactNumber) => {
     if (contacts.find(user => user.name === contactName)) {
@@ -40,19 +41,9 @@ export function App() {
       id: nanoid(),
     };
 
-    setContacts([...contacts, user]);
+    setContacts(contacts => [...contacts, user]);
     setFilter('');
   };
-
-  useEffect(() => {
-    if (firstLoad) {
-      const loaded = JSON.parse(window.localStorage.getItem(CONTACT_KEY)) ?? [];
-      if (loaded.length) setContacts(loaded);
-      setFirstLoad(false);
-    }
-    if (!firstLoad)
-      window.localStorage.setItem(CONTACT_KEY, JSON.stringify(contacts));
-  }, [firstLoad, contacts]);
 
   const onFilterContact = e => {
     const filter = e.target.value.toLowerCase();
@@ -93,10 +84,7 @@ export function App() {
     <Container>
       <AddContactWrapper>
         <HeaderApp>Phonebook</HeaderApp>
-        <ContactForm
-          onStorageContact={onStorageContact}
-          firstLoad={firstLoad}
-        />
+        <ContactForm onStorageContact={onStorageContact} />
       </AddContactWrapper>
       <ContactsWrapper>
         <Filter onFilterContact={onFilterContact} filter={filter} />
