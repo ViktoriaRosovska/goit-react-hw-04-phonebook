@@ -75,7 +75,9 @@ export function App() {
       'No',
       () => {
         services.Notify.info(`Contact ${user.name} was deleted`);
-        return setContacts(contacts.filter(contact => contact.id !== user.id));
+        return setContacts(prevContacts =>
+          prevContacts.filter(contact => contact.id !== user.id)
+        );
       }
     );
   };
